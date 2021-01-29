@@ -36,7 +36,7 @@ where
             (Some(initial_state), Some(transition)) => Ok(BasicStateMachine {
                 initial_state: initial_state.clone(),
                 current_state: RefCell::new(StateWrapper::new(initial_state)),
-                transition: transition,
+                transition,
                 _maker: self._marker,
             }),
             (None, _) => Err(Box::new(StateMachineError::FailedToBuild(
