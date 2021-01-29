@@ -3,6 +3,9 @@ use std::marker::PhantomData;
 pub mod builder;
 pub mod error;
 
+/// The trait provides several methos to implement state machine.
+/// `BasicStateMachine` is good example to implement it.
+/// Of course, you can build your own state machine by using this trait.
 pub trait StateMachine<State, Input> {
     fn current_state(&self) -> State;
     fn consume(&mut self, input: Input) -> State;
@@ -11,12 +14,22 @@ pub trait StateMachine<State, Input> {
     fn set(&mut self, new_state: State);
 }
 
+/// The basic state machine implementation.
+/// It holds `initial_state`, `current_state`, `transition` function.
 pub struct BasicStateMachine<State, Input, Transition>
 where
     Transition: FnMut(&State, &Input) -> State,
 {
+    /// `initial_state` is literary initial state of state machine.
+    /// The field doesn't update the whole life of the state machine.
+    /// That is, it always returns the initial state of the machine.
     pub initial_state: State,
+    /// `current_state` is the current state of the state machine.
+    /// It transit to the next state via `transition`.
     pub current_state: State,
+    /// `transition` is the definition of state transition.
+    /// See an example of StateMachine::transit, you can grasp how
+    /// to define the transition.
     pub transition: Transition,
     pub _maker: PhantomData<Input>,
 }
