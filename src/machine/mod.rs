@@ -3,17 +3,29 @@ use std::{cell::RefCell, marker::PhantomData};
 pub mod builder;
 pub mod error;
 
-/// The trait provides several methos to implement state machine.
-/// `BasicStateMachine` is good example to implement it.
+/// The trait is representing the basic operation for the state machine.
+/// It includes getting its current state, transition to the next state,
+/// resetting its current state to initial state and setting particular state forcibly.
+/// [`BasicStateMachine`] is a good example to implement it.
 /// Of course, you can build your own state machine by using this trait.
 pub trait StateMachine<State, Input> {
+    /// Returns the current state of the state machine.
     fn current_state(&self) -> State;
+    /// Returns the result of state transition according to `input` and
+    /// the definition of transition function.
     fn consume(&self, input: Input) -> State;
+    /// Returns the next state from the current state but the state machine
+    /// retains in its current state.
     fn peek(&self, input: Input) -> State;
+    /// Resets the current state to the initial state.
     fn reset(&self) -> State;
+    /// Set a new state forcibly to the current state.
     fn set(&self, new_state: State);
 }
 
+/// [`StateWrapper`] is a struct for interior mutability.
+/// It enables to acquire the control of switching mutable/imutable
+/// with [`std::cell::RefCell`].
 pub(crate) struct StateWrapper<State: Clone>(State);
 
 impl<State> StateWrapper<State>
@@ -40,15 +52,15 @@ where
     Transition: Fn(&State, &Input) -> State,
     State: Clone,
 {
-    /// `initial_state` is literary initial state of state machine.
-    /// The field doesn't update the whole life of the state machine.
+    /// `initial_state` is literally an initial state of the state machine.
+    /// The field isn't updated the whole life of the state machine.
     /// That is, it always returns the initial state of the machine.
     initial_state: State,
     /// `current_state` is the current state of the state machine.
     /// It transit to the next state via `transition`.
     current_state: RefCell<StateWrapper<State>>,
     /// `transition` is the definition of state transition.
-    /// See an example of StateMachine::transit, you can grasp how
+    /// See an example of [`StateMachine::consume()`], you can grasp how
     /// to define the transition.
     transition: Transition,
     _maker: PhantomData<Input>,

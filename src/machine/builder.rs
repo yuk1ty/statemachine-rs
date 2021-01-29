@@ -2,9 +2,11 @@ use std::{cell::RefCell, marker::PhantomData};
 
 use super::{error::StateMachineError, BasicStateMachine, StateMachine, StateWrapper};
 
+/// This builder enables us to assemble StateMachine
+/// (like [`crate::machine::BasicStateMachine`]) more easily.
 pub struct StateMachineBuilder<State, Input, Transition>
 where
-    Transition: FnMut(&State, &Input) -> State,
+    Transition: Fn(&State, &Input) -> State,
     State: Clone,
 {
     initial_state: Option<State>,
@@ -17,20 +19,24 @@ where
     Transition: Fn(&State, &Input) -> State,
     State: Clone,
 {
+    /// Starts the builder.
     pub fn start() -> Self {
         Self::default()
     }
 
+    /// Sets particular initial state to the state machine.
     pub fn initial_state(mut self, state: State) -> Self {
         self.initial_state = Some(state);
         self
     }
 
+    /// Sets particular transition algorithm to the state machine.
     pub fn transition(mut self, next: Transition) -> Self {
         self.transition = Some(next);
         self
     }
 
+    /// To finish the builder. If it fails, returns [`crate::machine::error::StateMachineError`].
     pub fn build(self) -> Result<impl StateMachine<State, Input>, Box<dyn std::error::Error>> {
         match (self.initial_state, self.transition) {
             (Some(initial_state), Some(transition)) => Ok(BasicStateMachine {
@@ -39,10 +45,10 @@ where
                 transition,
                 _maker: self._marker,
             }),
-            (None, _) => Err(Box::new(StateMachineError::FailedToBuild(
+            (None, _) => Err(Box::new(StateMachineError::MissingField(
                 "initial_state".to_string(),
             ))),
-            (_, None) => Err(Box::new(StateMachineError::FailedToBuild(
+            (_, None) => Err(Box::new(StateMachineError::MissingField(
                 "transition".to_string(),
             ))),
         }
@@ -51,7 +57,7 @@ where
 
 impl<State, Input, Transition> Default for StateMachineBuilder<State, Input, Transition>
 where
-    Transition: FnMut(&State, &Input) -> State,
+    Transition: Fn(&State, &Input) -> State,
     State: Clone,
 {
     fn default() -> Self {
