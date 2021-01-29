@@ -14,27 +14,22 @@ pub trait StateMachine<State, Input> {
     fn set(&self, new_state: State);
 }
 
-pub(crate) struct StateWrapper<State>
-where
-    State: Clone,
-{
-    inner: State,
-}
+pub(crate) struct StateWrapper<State: Clone>(State);
 
 impl<State> StateWrapper<State>
 where
     State: Clone,
 {
     pub fn new(state: State) -> Self {
-        StateWrapper { inner: state }
+        StateWrapper(state)
     }
 
     pub fn get(&self) -> State {
-        self.inner.clone()
+        self.0.clone()
     }
 
     pub fn set(&mut self, state: State) {
-        self.inner = state;
+        self.0 = state;
     }
 }
 
@@ -70,14 +65,13 @@ where
     }
 
     fn consume(&self, input: Input) -> State {
-        let mut new_state = self.current_state.borrow().get();
-        new_state = (self.transition)(&new_state, &input);
+        let new_state = (self.transition)(&self.current_state.borrow().0, &input);
         self.current_state.borrow_mut().set(new_state);
         self.current_state()
     }
 
     fn peek(&self, input: Input) -> State {
-        (self.transition)(&self.current_state.borrow().inner, &input)
+        (self.transition)(&self.current_state.borrow().0, &input)
     }
 
     fn reset(&self) -> State {
