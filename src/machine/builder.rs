@@ -1,11 +1,11 @@
 use std::marker::PhantomData;
 
-use super::{BasicStateMachine, StateMachine};
+use super::{error::StateMachineError, BasicStateMachine, StateMachine};
 
 pub struct StateMachineBuilder<State, Input, Transition>
 where
     Transition: FnMut(&State, &Input) -> State,
-    State: Copy,
+    State: Clone,
 {
     initial_state: Option<State>,
     transition: Option<Transition>,
@@ -15,7 +15,7 @@ where
 impl<State, Input, Transition> StateMachineBuilder<State, Input, Transition>
 where
     Transition: FnMut(&State, &Input) -> State,
-    State: Copy,
+    State: Clone,
 {
     pub fn start() -> Self {
         Self::default()
@@ -31,12 +31,20 @@ where
         self
     }
 
-    pub fn build(self) -> impl StateMachine<State, Input> {
-        BasicStateMachine {
-            initial_state: self.initial_state.unwrap(),
-            current_state: self.initial_state.unwrap(),
-            transition: self.transition.unwrap(),
-            _maker: self._marker,
+    pub fn build(self) -> Result<impl StateMachine<State, Input>, Box<dyn std::error::Error>> {
+        match (self.initial_state, self.transition) {
+            (Some(initial_state), Some(transition)) => Ok(BasicStateMachine {
+                initial_state: initial_state.clone(),
+                current_state: initial_state,
+                transition: transition,
+                _maker: self._marker,
+            }),
+            (None, _) => Err(Box::new(StateMachineError::FailedToBuild(
+                "initial_state".to_string(),
+            ))),
+            (_, None) => Err(Box::new(StateMachineError::FailedToBuild(
+                "transition".to_string(),
+            ))),
         }
     }
 }
@@ -44,7 +52,7 @@ where
 impl<State, Input, Transition> Default for StateMachineBuilder<State, Input, Transition>
 where
     Transition: FnMut(&State, &Input) -> State,
-    State: Copy,
+    State: Clone,
 {
     fn default() -> Self {
         StateMachineBuilder {
@@ -93,7 +101,8 @@ mod test {
                 (Stations::Sakurashinmachi, Train::Local) => Stations::Yoga,
                 _ => unreachable!(),
             })
-            .build();
+            .build()
+            .unwrap();
 
         assert_eq!(Stations::Sangendyaya, sm.consume(Train::Express));
     }

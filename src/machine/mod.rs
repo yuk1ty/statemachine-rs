@@ -1,6 +1,7 @@
 use std::marker::PhantomData;
 
 pub mod builder;
+pub mod error;
 
 pub trait StateMachine<State, Input> {
     fn current_state(&self) -> State;
