@@ -1,4 +1,4 @@
-use std::marker::PhantomData;
+use std::{cell::RefCell, marker::PhantomData};
 
 pub mod builder;
 pub mod error;
@@ -8,69 +8,96 @@ pub mod error;
 /// Of course, you can build your own state machine by using this trait.
 pub trait StateMachine<State, Input> {
     fn current_state(&self) -> State;
-    fn consume(&mut self, input: Input) -> State;
-    fn peek(&mut self, input: Input) -> State;
-    fn reset(&mut self) -> State;
-    fn set(&mut self, new_state: State);
+    fn consume(&self, input: Input) -> State;
+    fn peek(&self, input: Input) -> State;
+    fn reset(&self) -> State;
+    fn set(&self, new_state: State);
+}
+
+pub(crate) struct StateWrapper<State>
+where
+    State: Clone,
+{
+    inner: State,
+}
+
+impl<State> StateWrapper<State>
+where
+    State: Clone,
+{
+    pub fn new(state: State) -> Self {
+        StateWrapper { inner: state }
+    }
+
+    pub fn get(&self) -> State {
+        self.inner.clone()
+    }
+
+    pub fn set(&mut self, state: State) {
+        self.inner = state;
+    }
 }
 
 /// The basic state machine implementation.
 /// It holds `initial_state`, `current_state`, `transition` function.
 pub struct BasicStateMachine<State, Input, Transition>
 where
-    Transition: FnMut(&State, &Input) -> State,
+    Transition: Fn(&State, &Input) -> State,
+    State: Clone,
 {
     /// `initial_state` is literary initial state of state machine.
     /// The field doesn't update the whole life of the state machine.
     /// That is, it always returns the initial state of the machine.
-    pub initial_state: State,
+    initial_state: State,
     /// `current_state` is the current state of the state machine.
     /// It transit to the next state via `transition`.
-    pub current_state: State,
+    current_state: RefCell<StateWrapper<State>>,
     /// `transition` is the definition of state transition.
     /// See an example of StateMachine::transit, you can grasp how
     /// to define the transition.
-    pub transition: Transition,
-    pub _maker: PhantomData<Input>,
+    transition: Transition,
+    _maker: PhantomData<Input>,
 }
 
 impl<State, Input, Transition> StateMachine<State, Input>
     for BasicStateMachine<State, Input, Transition>
 where
-    Transition: FnMut(&State, &Input) -> State,
+    Transition: Fn(&State, &Input) -> State,
     State: Clone,
 {
     fn current_state(&self) -> State {
-        self.current_state.clone()
+        self.current_state.borrow().get()
     }
 
-    fn consume(&mut self, input: Input) -> State {
-        let mut new_state = self.current_state.clone();
+    fn consume(&self, input: Input) -> State {
+        let mut new_state = self.current_state.borrow().get();
         new_state = (self.transition)(&new_state, &input);
-        self.current_state = new_state;
+        self.current_state.borrow_mut().set(new_state);
         self.current_state()
     }
 
-    fn peek(&mut self, input: Input) -> State {
-        (self.transition)(&self.current_state, &input)
+    fn peek(&self, input: Input) -> State {
+        (self.transition)(&self.current_state.borrow().inner, &input)
     }
 
-    fn reset(&mut self) -> State {
-        self.current_state = self.initial_state.clone();
+    fn reset(&self) -> State {
+        self.current_state
+            .borrow_mut()
+            .set(self.initial_state.clone());
         self.current_state()
     }
 
-    fn set(&mut self, new_state: State) {
-        self.current_state = new_state
+    fn set(&self, new_state: State) {
+        self.current_state.borrow_mut().set(new_state)
     }
 }
 
 #[cfg(test)]
 mod test {
-    use std::marker::PhantomData;
+    use std::{cell::RefCell, marker::PhantomData};
 
-    use super::BasicStateMachine;
     use super::StateMachine;
+    use super::{BasicStateMachine, StateWrapper};
 
     #[derive(Copy, Clone, Debug, PartialEq)]
     enum Stations {
@@ -92,7 +119,7 @@ mod test {
     fn test_current_state() {
         let sm = BasicStateMachine {
             initial_state: Stations::Shibuya,
-            current_state: Stations::Shibuya,
+            current_state: RefCell::new(StateWrapper::new(Stations::Shibuya)),
             transition: |station, train| match (station, train) {
                 (Stations::Shibuya, Train::Local) => Stations::IkejiriOhashi,
                 _ => unreachable!(),
@@ -105,9 +132,9 @@ mod test {
 
     #[test]
     fn test_consume() {
-        let mut sm = BasicStateMachine {
+        let sm = BasicStateMachine {
             initial_state: Stations::Shibuya,
-            current_state: Stations::Shibuya,
+            current_state: RefCell::new(StateWrapper::new(Stations::Shibuya)),
             transition: |station, train| match (station, train) {
                 (Stations::Shibuya, Train::Local) => Stations::IkejiriOhashi,
                 (Stations::Shibuya, Train::Express) => Stations::Sangendyaya,
@@ -126,9 +153,9 @@ mod test {
 
     #[test]
     fn test_peek() {
-        let mut sm = BasicStateMachine {
+        let sm = BasicStateMachine {
             initial_state: Stations::Sangendyaya,
-            current_state: Stations::Sangendyaya,
+            current_state: RefCell::new(StateWrapper::new(Stations::Sangendyaya)),
             transition: |station, train| match (station, train) {
                 (Stations::Shibuya, Train::Local) => Stations::IkejiriOhashi,
                 (Stations::Shibuya, Train::Express) => Stations::Sangendyaya,
@@ -148,9 +175,9 @@ mod test {
 
     #[test]
     fn test_reset() {
-        let mut sm = BasicStateMachine {
+        let sm = BasicStateMachine {
             initial_state: Stations::Shibuya,
-            current_state: Stations::Sangendyaya,
+            current_state: RefCell::new(StateWrapper::new(Stations::Sangendyaya)),
             transition: |station, train| match (station, train) {
                 (Stations::Shibuya, Train::Local) => Stations::IkejiriOhashi,
                 (Stations::Shibuya, Train::Express) => Stations::Sangendyaya,
@@ -170,9 +197,9 @@ mod test {
 
     #[test]
     fn test_set() {
-        let mut sm = BasicStateMachine {
+        let sm = BasicStateMachine {
             initial_state: Stations::Shibuya,
-            current_state: Stations::Shibuya,
+            current_state: RefCell::new(StateWrapper::new(Stations::Shibuya)),
             transition: |station, train| match (station, train) {
                 (Stations::Shibuya, Train::Local) => Stations::IkejiriOhashi,
                 _ => unreachable!(),

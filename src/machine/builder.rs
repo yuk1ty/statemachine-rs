@@ -1,6 +1,6 @@
-use std::marker::PhantomData;
+use std::{cell::RefCell, marker::PhantomData};
 
-use super::{error::StateMachineError, BasicStateMachine, StateMachine};
+use super::{error::StateMachineError, BasicStateMachine, StateMachine, StateWrapper};
 
 pub struct StateMachineBuilder<State, Input, Transition>
 where
@@ -14,7 +14,7 @@ where
 
 impl<State, Input, Transition> StateMachineBuilder<State, Input, Transition>
 where
-    Transition: FnMut(&State, &Input) -> State,
+    Transition: Fn(&State, &Input) -> State,
     State: Clone,
 {
     pub fn start() -> Self {
@@ -35,7 +35,7 @@ where
         match (self.initial_state, self.transition) {
             (Some(initial_state), Some(transition)) => Ok(BasicStateMachine {
                 initial_state: initial_state.clone(),
-                current_state: initial_state,
+                current_state: RefCell::new(StateWrapper::new(initial_state)),
                 transition: transition,
                 _maker: self._marker,
             }),
@@ -89,7 +89,7 @@ mod test {
 
     #[test]
     fn test_build() {
-        let mut sm = StateMachineBuilder::start()
+        let sm = StateMachineBuilder::start()
             .initial_state(Stations::Shibuya)
             .transition(|station, train| match (station, train) {
                 (Stations::Shibuya, Train::Local) => Stations::IkejiriOhashi,
