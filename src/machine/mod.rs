@@ -24,17 +24,17 @@ impl<State, Input, Transition> StateMachine<State, Input>
     for BasicStateMachine<State, Input, Transition>
 where
     Transition: FnMut(&State, &Input) -> State,
-    State: Copy,
+    State: Clone,
 {
     fn current_state(&self) -> State {
-        self.current_state
+        self.current_state.clone()
     }
 
     fn consume(&mut self, input: Input) -> State {
-        let mut new_state = self.current_state;
+        let mut new_state = self.current_state.clone();
         new_state = (self.transition)(&new_state, &input);
         self.current_state = new_state;
-        self.current_state
+        self.current_state()
     }
 
     fn peek(&mut self, input: Input) -> State {
@@ -42,8 +42,8 @@ where
     }
 
     fn reset(&mut self) -> State {
-        self.current_state = self.initial_state;
-        self.initial_state
+        self.current_state = self.initial_state.clone();
+        self.current_state()
     }
 
     fn set(&mut self, new_state: State) {
