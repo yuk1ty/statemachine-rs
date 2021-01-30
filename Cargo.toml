@@ -1,5 +1,5 @@
 [package]
-name = "statemachine_rs"
+name = "statemachine-rs"
 version = "0.1.0"
 authors = ["yytyd <toyoda_yuki@cyberagent.co.jp>"]
 edition = "2018"

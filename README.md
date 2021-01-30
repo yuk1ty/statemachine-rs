@@ -1,6 +1,6 @@
 [![Workflow Status](https://github.com/yuk1ty/statemachine-rs/workflows/Rust/badge.svg)](https://github.com/yuk1ty/statemachine-rs/actions?query=workflow%3A%22Rust%22)
 
-# statemachine_rs
+# statemachine-rs
 
 A zero dependency crate to implement state machine.
 
@@ -38,7 +38,7 @@ You can assemble your state machine by using `statemachine_rs::machine::builder:
 
 Of cource we can use `enum`s for representing states and inputs. Let's have a look at another example.
 
-The following example describes if you press the button, the state of its button become `On`. Otherwise, `Off`.
+The following example describes if you press the button, the state turns to be `On`. Otherwise, `Off`.
 
 ```rust
 use statemachine_rs::machine::{builder::StateMachineBuilder, StateMachine};

@@ -34,7 +34,7 @@
 //!
 //! Of cource we can use `enum`s for representing states and inputs. Let's have a look at another example.
 //!
-//! The following example describes if you press the button, the state of its button become `On`. Otherwise, `Off`.
+//! The following example describes if you press the button, the state turns to be `On`. Otherwise, `Off`.
 //!
 //! ```rust
 //! use statemachine_rs::machine::{builder::StateMachineBuilder, StateMachine};
