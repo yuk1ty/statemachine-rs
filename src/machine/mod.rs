@@ -10,16 +10,166 @@ pub mod error;
 /// Of course, you can build your own state machine by using this trait.
 pub trait StateMachine<State, Input> {
     /// Returns the current state of the state machine.
+    ///
+    /// # Example
+    /// ```
+    /// use statemachine_rs::machine::{builder::StateMachineBuilder, StateMachine};
+    ///
+    /// #[derive(Clone, Debug, PartialEq)]
+    /// enum ButtonState {
+    ///     On,
+    ///     Off,
+    /// }
+    ///
+    /// #[allow(dead_code)]
+    /// enum Input {
+    ///     Press,
+    /// }
+    ///
+    /// fn main() {
+    ///     let sm = StateMachineBuilder::start()
+    ///         .initial_state(ButtonState::Off)
+    ///         .transition(|state, input| match (state, input) {
+    ///             (ButtonState::On, Input::Press) => ButtonState::Off,
+    ///             (ButtonState::Off, Input::Press) => ButtonState::On,
+    ///         })
+    ///         .build()
+    ///         .unwrap();
+    ///
+    ///     assert_eq!(ButtonState::Off, sm.current_state());
+    /// }
+    /// ```
     fn current_state(&self) -> State;
     /// Returns the result of state transition according to `input` and
     /// the definition of transition function.
+    ///
+    /// # Example
+    /// ```
+    /// use statemachine_rs::machine::{builder::StateMachineBuilder, StateMachine};
+    ///
+    /// #[derive(Clone, Debug, PartialEq)]
+    /// enum ButtonState {
+    ///     On,
+    ///     Off,
+    /// }
+    ///
+    /// enum Input {
+    ///     Press,
+    /// }
+    ///
+    /// fn main() {
+    ///     let sm = StateMachineBuilder::start()
+    ///         .initial_state(ButtonState::Off)
+    ///         .transition(|state, input| match (state, input) {
+    ///             (ButtonState::On, Input::Press) => ButtonState::Off,
+    ///             (ButtonState::Off, Input::Press) => ButtonState::On,
+    ///         })
+    ///         .build()
+    ///         .unwrap();
+    ///
+    ///     assert_eq!(ButtonState::Off, sm.current_state());
+    ///     assert_eq!(ButtonState::On, sm.consume(Input::Press));
+    /// }
+    /// ```
     fn consume(&self, input: Input) -> State;
     /// Returns the next state from the current state but the state machine
     /// retains in its current state.
+    ///
+    /// # Example
+    /// ```
+    /// use statemachine_rs::machine::{builder::StateMachineBuilder, StateMachine};
+    ///
+    /// #[derive(Clone, Debug, PartialEq)]
+    /// enum ButtonState {
+    ///     On,
+    ///     Off,
+    /// }
+    ///
+    /// enum Input {
+    ///     Press,
+    /// }
+    ///
+    /// fn main() {
+    ///     let sm = StateMachineBuilder::start()
+    ///         .initial_state(ButtonState::Off)
+    ///         .transition(|state, input| match (state, input) {
+    ///             (ButtonState::On, Input::Press) => ButtonState::Off,
+    ///             (ButtonState::Off, Input::Press) => ButtonState::On,
+    ///         })
+    ///         .build()
+    ///         .unwrap();
+    ///
+    ///     assert_eq!(ButtonState::Off, sm.current_state());
+    ///     assert_eq!(ButtonState::On, sm.peek(Input::Press));
+    ///     assert_eq!(ButtonState::Off, sm.current_state());
+    /// }
+    /// ```
     fn peek(&self, input: Input) -> State;
     /// Resets the current state to the initial state.
+    ///
+    /// # Example
+    /// ```
+    /// use statemachine_rs::machine::{builder::StateMachineBuilder, StateMachine};
+    ///
+    /// #[derive(Clone, Debug, PartialEq)]
+    /// enum ButtonState {
+    ///     On,
+    ///     Off,
+    /// }
+    ///
+    /// enum Input {
+    ///     Press,
+    /// }
+    ///
+    /// fn main() {
+    ///     let sm = StateMachineBuilder::start()
+    ///         .initial_state(ButtonState::Off)
+    ///         .transition(|state, input| match (state, input) {
+    ///             (ButtonState::On, Input::Press) => ButtonState::Off,
+    ///             (ButtonState::Off, Input::Press) => ButtonState::On,
+    ///         })
+    ///         .build()
+    ///         .unwrap();
+    ///
+    ///     assert_eq!(ButtonState::Off, sm.current_state());
+    ///     assert_eq!(ButtonState::On, sm.consume(Input::Press));
+    ///     assert_eq!(ButtonState::Off, sm.reset());
+    /// }
+    /// ```
     fn reset(&self) -> State;
     /// Set a new state forcibly to the current state.
+    ///
+    /// # Example
+    /// ```
+    /// use statemachine_rs::machine::{builder::StateMachineBuilder, StateMachine};
+    ///
+    /// #[derive(Clone, Debug, PartialEq)]
+    /// enum ButtonState {
+    ///     On,
+    ///     Off,
+    ///     Disable,
+    /// }
+    ///
+    /// enum Input {
+    ///     Press,
+    /// }
+    ///
+    /// fn main() {
+    ///     let sm = StateMachineBuilder::start()
+    ///         .initial_state(ButtonState::Off)
+    ///         .transition(|state, input| match (state, input) {
+    ///             (ButtonState::On, Input::Press) => ButtonState::Off,
+    ///             (ButtonState::Off, Input::Press) => ButtonState::On,
+    ///             (ButtonState::Disable, Input::Press) => ButtonState::Disable,
+    ///         })
+    ///         .build()
+    ///         .unwrap();
+    ///
+    ///     assert_eq!(ButtonState::Off, sm.current_state());
+    ///     sm.set(ButtonState::Disable);
+    ///     assert_eq!(ButtonState::Disable, sm.consume(Input::Press));
+    /// }
+    /// ```
     fn set(&self, new_state: State);
 }
 
