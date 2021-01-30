@@ -5,7 +5,7 @@ authors = ["yytyd <toyoda_yuki@cyberagent.co.jp>"]
 edition = "2018"
 
 description = "A statemachine crate which have zero dependencies."
-repository = "https://github.com/yuk1ty/statemachine"
+repository = "https://github.com/yuk1ty/statemachine-rs"
 license = "MIT"
 readme = "README.md"
 
