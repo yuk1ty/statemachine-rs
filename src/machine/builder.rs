@@ -6,7 +6,7 @@ use super::{error::StateMachineError, BasicStateMachine, StateMachine, StateWrap
 /// (like [`crate::machine::BasicStateMachine`]) more easily.
 pub struct StateMachineBuilder<State, Input, Transition>
 where
-    Transition: Fn(&State, &Input) -> State,
+    Transition: Fn(&State, Input) -> State,
     State: Clone,
 {
     initial_state: Option<State>,
@@ -17,7 +17,7 @@ where
 
 impl<State, Input, Transition> StateMachineBuilder<State, Input, Transition>
 where
-    Transition: Fn(&State, &Input) -> State,
+    Transition: Fn(&State, Input) -> State,
     State: Clone,
 {
     /// Starts the builder.
@@ -72,7 +72,7 @@ where
 
 impl<State, Input, Transition> Default for StateMachineBuilder<State, Input, Transition>
 where
-    Transition: Fn(&State, &Input) -> State,
+    Transition: Fn(&State, Input) -> State,
     State: Clone,
 {
     fn default() -> Self {

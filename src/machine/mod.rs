@@ -49,7 +49,7 @@ where
 /// It holds `initial_state`, `current_state`, `transition` function.
 pub struct BasicStateMachine<State, Input, Transition>
 where
-    Transition: Fn(&State, &Input) -> State,
+    Transition: Fn(&State, Input) -> State,
     State: Clone,
 {
     /// `initial_state` is literally an initial state of the state machine.
@@ -69,7 +69,7 @@ where
 impl<State, Input, Transition> StateMachine<State, Input>
     for BasicStateMachine<State, Input, Transition>
 where
-    Transition: Fn(&State, &Input) -> State,
+    Transition: Fn(&State, Input) -> State,
     State: Clone,
 {
     fn current_state(&self) -> State {
@@ -77,13 +77,13 @@ where
     }
 
     fn consume(&self, input: Input) -> State {
-        let new_state = (self.transition)(&self.current_state.borrow().0, &input);
+        let new_state = (self.transition)(&self.current_state.borrow().0, input);
         self.current_state.borrow_mut().set(new_state);
         self.current_state()
     }
 
     fn peek(&self, input: Input) -> State {
-        (self.transition)(&self.current_state.borrow().0, &input)
+        (self.transition)(&self.current_state.borrow().0, input)
     }
 
     fn reset(&self) -> State {
