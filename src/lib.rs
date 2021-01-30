@@ -11,21 +11,19 @@
 //! ```rust
 //! use statemachine_rs::machine::{builder::StateMachineBuilder, StateMachine};
 //!
-//! fn main() {
-//!     let sm = StateMachineBuilder::start()
-//!         .initial_state(1)
-//!         .transition(|state, input| match (state, input) {
-//!             (1, "next") => 2,
-//!             (2, "next") => 3,
-//!             _ => unreachable!(),
-//!         })
-//!         .build()
-//!         .unwrap();
+//! let sm = StateMachineBuilder::start()
+//!     .initial_state(1)
+//!     .transition(|state, input| match (state, input) {
+//!         (1, "next") => 2,
+//!         (2, "next") => 3,
+//!         _ => unreachable!(),
+//!     })
+//!     .build()
+//!     .unwrap();
 //!
-//!     assert_eq!(1, sm.current_state());
-//!     sm.consume("next");
-//!     assert_eq!(2, sm.current_state());
-//! }
+//! assert_eq!(1, sm.current_state());
+//! sm.consume("next");
+//! assert_eq!(2, sm.current_state());
 //! ```
 //!
 //! You can assemble your state machine by using `statemachine_rs::machine::builder::StateMachineBUilder`.
@@ -49,20 +47,18 @@
 //!     Press,
 //! }
 //!
-//! fn main() {
-//!     let sm = StateMachineBuilder::start()
-//!         .initial_state(ButtonState::Off)
-//!         .transition(|state, input| match (state, input) {
-//!             (ButtonState::On, Input::Press) => ButtonState::Off,
-//!             (ButtonState::Off, Input::Press) => ButtonState::On,
-//!         })
-//!         .build()
-//!         .unwrap();
+//! let sm = StateMachineBuilder::start()
+//!     .initial_state(ButtonState::Off)
+//!     .transition(|state, input| match (state, input) {
+//!         (ButtonState::On, Input::Press) => ButtonState::Off,
+//!         (ButtonState::Off, Input::Press) => ButtonState::On,
+//!     })
+//!     .build()
+//!     .unwrap();
 //!
-//!     assert_eq!(ButtonState::Off, sm.current_state());
-//!     sm.consume(Input::Press);
-//!     assert_eq!(ButtonState::On, sm.current_state());
-//! }
+//! assert_eq!(ButtonState::Off, sm.current_state());
+//! sm.consume(Input::Press);
+//! assert_eq!(ButtonState::On, sm.current_state());
 //! ```
 //! ## License
 //! MIT
