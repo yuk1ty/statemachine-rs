@@ -1,5 +1,5 @@
 [package]
-name = "statemachine"
+name = "statemachine_rs"
 version = "0.1.0"
 authors = ["yytyd <toyoda_yuki@cyberagent.co.jp>"]
 edition = "2018"
@@ -8,5 +8,8 @@ description = "A statemachine crate which have zero dependencies."
 repository = "https://github.com/yuk1ty/statemachine"
 license = "MIT"
 readme = "README.md"
+
+[badges]
+github = { repository = "yuk1ty/statemachine-rs", workflow = "Rust" }
 
 [dependencies]
