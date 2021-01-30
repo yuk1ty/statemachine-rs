@@ -2,7 +2,6 @@
 
 # statemachine_rs
 
-## statemachine-rs
 A zero dependency crate to implement state machine.
 
 ### Current Version
