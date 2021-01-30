@@ -111,6 +111,7 @@ mod test {
 
     #[test]
     fn test_build() {
+        // sets only initial state
         let sm = StateMachineBuilder::start()
             .initial_state(Stations::Shibuya)
             .transition(|station, train| match (station, train) {
@@ -126,6 +127,43 @@ mod test {
             .build()
             .unwrap();
 
-        assert_eq!(Stations::Sangendyaya, sm.consume(Train::Express));
+        assert_eq!(Stations::Shibuya, sm.current_state());
+
+        // sets current state after initializing initial state
+        let sm = StateMachineBuilder::start()
+            .initial_state(Stations::Shibuya)
+            .current_state(Stations::Sangendyaya)
+            .transition(|station, train| match (station, train) {
+                (Stations::Shibuya, Train::Local) => Stations::IkejiriOhashi,
+                (Stations::Shibuya, Train::Express) => Stations::Sangendyaya,
+                (Stations::IkejiriOhashi, Train::Local) => Stations::Sangendyaya,
+                (Stations::Sangendyaya, Train::Local) => Stations::KomazawaDaigaku,
+                (Stations::Sangendyaya, Train::Express) => Stations::FutakoTamagawa,
+                (Stations::KomazawaDaigaku, Train::Local) => Stations::Sakurashinmachi,
+                (Stations::Sakurashinmachi, Train::Local) => Stations::Yoga,
+                _ => unreachable!(),
+            })
+            .build()
+            .unwrap();
+
+        assert_eq!(Stations::Sangendyaya, sm.current_state());
+    }
+
+    #[test]
+    fn test_fail_initial_state() {
+        let sm = StateMachineBuilder::start()
+            .transition(|station, train| match (station, train) {
+                (Stations::Shibuya, Train::Local) => Stations::IkejiriOhashi,
+                (Stations::Shibuya, Train::Express) => Stations::Sangendyaya,
+                (Stations::IkejiriOhashi, Train::Local) => Stations::Sangendyaya,
+                (Stations::Sangendyaya, Train::Local) => Stations::KomazawaDaigaku,
+                (Stations::Sangendyaya, Train::Express) => Stations::FutakoTamagawa,
+                (Stations::KomazawaDaigaku, Train::Local) => Stations::Sakurashinmachi,
+                (Stations::Sakurashinmachi, Train::Local) => Stations::Yoga,
+                _ => unreachable!(),
+            })
+            .build();
+
+        assert!(sm.is_err());
     }
 }
