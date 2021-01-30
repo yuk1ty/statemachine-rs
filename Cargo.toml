@@ -8,6 +8,8 @@ description = "A statemachine crate which have zero dependencies."
 repository = "https://github.com/yuk1ty/statemachine-rs"
 license = "MIT"
 readme = "README.md"
+keywords = ["statemachine"]
+categories = ["data-structures"]
 
 [badges]
 github = { repository = "yuk1ty/statemachine-rs", workflow = "Rust" }
