@@ -53,8 +53,8 @@ where
     State: Clone,
 {
     /// `initial_state` is literally an initial state of the state machine.
-    /// The field isn't updated the whole life of the state machine.
-    /// That is, it always returns the initial state of the machine.
+    /// The field isn't updated the whole life of its state machine.
+    /// That is, it always returns its initial state of its machine.
     initial_state: State,
     /// `current_state` is the current state of the state machine.
     /// It transit to the next state via `transition`.

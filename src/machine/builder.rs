@@ -10,6 +10,7 @@ where
     State: Clone,
 {
     initial_state: Option<State>,
+    current_state: Option<State>,
     transition: Option<Transition>,
     _marker: PhantomData<Input>,
 }
@@ -30,6 +31,12 @@ where
         self
     }
 
+    /// Sets particular state to the current state.
+    pub fn current_state(mut self, state: State) -> Self {
+        self.current_state = Some(state);
+        self
+    }
+
     /// Sets particular transition algorithm to the state machine.
     pub fn transition(mut self, next: Transition) -> Self {
         self.transition = Some(next);
@@ -41,7 +48,15 @@ where
         match (self.initial_state, self.transition) {
             (Some(initial_state), Some(transition)) => Ok(BasicStateMachine {
                 initial_state: initial_state.clone(),
-                current_state: RefCell::new(StateWrapper::new(initial_state)),
+                current_state: {
+                    // If `current_state` in this builder is still `None`,
+                    // sets `initial_state` as the current state forcibly.
+                    let current_state = self.current_state;
+                    match current_state {
+                        Some(state) => RefCell::new(StateWrapper::new(state)),
+                        None => RefCell::new(StateWrapper::new(initial_state)),
+                    }
+                },
                 transition,
                 _maker: self._marker,
             }),
@@ -63,6 +78,7 @@ where
     fn default() -> Self {
         StateMachineBuilder {
             initial_state: None,
+            current_state: None,
             transition: None,
             _marker: PhantomData::<Input>::default(),
         }
