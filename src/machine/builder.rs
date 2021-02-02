@@ -2,6 +2,20 @@ use std::{cell::RefCell, marker::PhantomData};
 
 use super::{error::StateMachineError, BasicStateMachine, StateMachine, StateWrapper};
 
+pub trait IStateMachineBuilder<State, Input, Transition, Output>
+where
+    Transition: Fn(&State, Input) -> State,
+    State: Clone,
+{
+    type Output;
+
+    fn start() -> Self;
+    fn initial_state(self, state: State) -> Self;
+    fn current_state(self, state: State) -> Self;
+    fn transition(self, next: Transition) -> Self;
+    fn build(self) -> Result<Self::Output, Box<dyn std::error::Error>>;
+}
+
 /// This builder enables us to assemble StateMachine
 /// (like [`crate::machine::BasicStateMachine`]) more easily.
 pub struct StateMachineBuilder<State, Input, Transition>
