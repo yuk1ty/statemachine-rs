@@ -2,7 +2,7 @@ use std::{cell::RefCell, marker::PhantomData};
 
 use super::{error::StateMachineError, BasicStateMachine, StateMachine, StateWrapper};
 
-pub trait IStateMachineBuilder<State, Input, Transition, Output>
+pub trait IStateMachineBuilder<State, Input, Transition>
 where
     Transition: Fn(&State, Input) -> State,
     State: Clone,
