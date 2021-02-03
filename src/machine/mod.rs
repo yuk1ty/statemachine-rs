@@ -13,7 +13,9 @@ pub trait StateMachine<State, Input> {
     ///
     /// # Example
     /// ```
-    /// use statemachine_rs::machine::{builder::StateMachineBuilder, StateMachine};
+    /// use statemachine_rs::machine::{
+    ///     builder::BasicStateMachineBuilder, builder::StateMachineBuilder, StateMachine,
+    /// };
     ///
     /// #[derive(Clone, Debug, PartialEq)]
     /// enum ButtonState {
@@ -26,7 +28,7 @@ pub trait StateMachine<State, Input> {
     ///     Press,
     /// }
     ///
-    /// let sm = StateMachineBuilder::start()
+    /// let sm = BasicStateMachineBuilder::start()
     ///     .initial_state(ButtonState::Off)
     ///     .transition(|state, input| match (state, input) {
     ///         (ButtonState::On, Input::Press) => ButtonState::Off,
@@ -43,7 +45,9 @@ pub trait StateMachine<State, Input> {
     ///
     /// # Example
     /// ```
-    /// use statemachine_rs::machine::{builder::StateMachineBuilder, StateMachine};
+    /// use statemachine_rs::machine::{
+    ///     builder::BasicStateMachineBuilder, builder::StateMachineBuilder, StateMachine,
+    /// };
     ///
     /// #[derive(Clone, Debug, PartialEq)]
     /// enum ButtonState {
@@ -55,7 +59,7 @@ pub trait StateMachine<State, Input> {
     ///     Press,
     /// }
     ///
-    /// let sm = StateMachineBuilder::start()
+    /// let sm = BasicStateMachineBuilder::start()
     ///     .initial_state(ButtonState::Off)
     ///     .transition(|state, input| match (state, input) {
     ///         (ButtonState::On, Input::Press) => ButtonState::Off,
@@ -73,7 +77,9 @@ pub trait StateMachine<State, Input> {
     ///
     /// # Example
     /// ```
-    /// use statemachine_rs::machine::{builder::StateMachineBuilder, StateMachine};
+    /// use statemachine_rs::machine::{
+    ///     builder::BasicStateMachineBuilder, builder::StateMachineBuilder, StateMachine,
+    /// };
     ///
     /// #[derive(Clone, Debug, PartialEq)]
     /// enum ButtonState {
@@ -85,7 +91,7 @@ pub trait StateMachine<State, Input> {
     ///     Press,
     /// }
     ///
-    /// let sm = StateMachineBuilder::start()
+    /// let sm = BasicStateMachineBuilder::start()
     ///     .initial_state(ButtonState::Off)
     ///     .transition(|state, input| match (state, input) {
     ///         (ButtonState::On, Input::Press) => ButtonState::Off,
@@ -103,7 +109,9 @@ pub trait StateMachine<State, Input> {
     ///
     /// # Example
     /// ```
-    /// use statemachine_rs::machine::{builder::StateMachineBuilder, StateMachine};
+    /// use statemachine_rs::machine::{
+    ///     builder::BasicStateMachineBuilder, builder::StateMachineBuilder, StateMachine,
+    /// };
     ///
     /// #[derive(Clone, Debug, PartialEq)]
     /// enum ButtonState {
@@ -115,7 +123,7 @@ pub trait StateMachine<State, Input> {
     ///     Press,
     /// }
     ///
-    /// let sm = StateMachineBuilder::start()
+    /// let sm = BasicStateMachineBuilder::start()
     ///     .initial_state(ButtonState::Off)
     ///     .transition(|state, input| match (state, input) {
     ///         (ButtonState::On, Input::Press) => ButtonState::Off,
@@ -133,7 +141,9 @@ pub trait StateMachine<State, Input> {
     ///
     /// # Example
     /// ```
-    /// use statemachine_rs::machine::{builder::StateMachineBuilder, StateMachine};
+    /// use statemachine_rs::machine::{
+    ///     builder::BasicStateMachineBuilder, builder::StateMachineBuilder, StateMachine,
+    /// };
     ///
     /// #[derive(Clone, Debug, PartialEq)]
     /// enum ButtonState {
@@ -146,7 +156,7 @@ pub trait StateMachine<State, Input> {
     ///     Press,
     /// }
     ///
-    /// let sm = StateMachineBuilder::start()
+    /// let sm = BasicStateMachineBuilder::start()
     ///     .initial_state(ButtonState::Off)
     ///     .transition(|state, input| match (state, input) {
     ///         (ButtonState::On, Input::Press) => ButtonState::Off,

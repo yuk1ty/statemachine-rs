@@ -9,9 +9,11 @@
 //! from given string ("next") and then, it produces outputs.
 //!
 //! ```rust
-//! use statemachine_rs::machine::{builder::StateMachineBuilder, StateMachine};
+//! use statemachine_rs::machine::{
+//!     builder::BasicStateMachineBuilder, builder::StateMachineBuilder, StateMachine,
+//! };
 //!
-//! let sm = StateMachineBuilder::start()
+//! let sm = BasicStateMachineBuilder::start()
 //!     .initial_state(1)
 //!     .transition(|state, input| match (state, input) {
 //!         (1, "next") => 2,
@@ -35,7 +37,9 @@
 //! The following example describes if you press the button, the state turns to be `On`. Otherwise, `Off`.
 //!
 //! ```rust
-//! use statemachine_rs::machine::{builder::StateMachineBuilder, StateMachine};
+//! use statemachine_rs::machine::{
+//!     builder::BasicStateMachineBuilder, builder::StateMachineBuilder, StateMachine,
+//! };
 //!
 //! #[derive(Clone, Debug, PartialEq)]
 //! enum ButtonState {
@@ -47,7 +51,7 @@
 //!     Press,
 //! }
 //!
-//! let sm = StateMachineBuilder::start()
+//! let sm = BasicStateMachineBuilder::start()
 //!     .initial_state(ButtonState::Off)
 //!     .transition(|state, input| match (state, input) {
 //!         (ButtonState::On, Input::Press) => ButtonState::Off,
