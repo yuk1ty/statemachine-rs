@@ -9,10 +9,19 @@ where
 {
     type Output;
 
+    /// Starts the builder.
     fn start() -> Self;
+
+    /// Sets particular initial state to the state machine.
     fn initial_state(self, state: State) -> Self;
+
+    /// Sets particular state to the current state.
     fn current_state(self, state: State) -> Self;
+
+    /// Sets particular transition algorithm to the state machine.
     fn transition(self, next: Transition) -> Self;
+
+    /// To finish the builder. If it fails, returns [`crate::machine::error::StateMachineError`].
     fn build(self) -> Result<Self::Output, Box<dyn std::error::Error>>;
 }
 
@@ -37,30 +46,25 @@ where
 {
     type Output = BasicStateMachine<State, Input, Transition>;
 
-    /// Starts the builder.
     fn start() -> Self {
         Self::default()
     }
 
-    /// Sets particular initial state to the state machine.
     fn initial_state(mut self, state: State) -> Self {
         self.initial_state = Some(state);
         self
     }
 
-    /// Sets particular state to the current state.
     fn current_state(mut self, state: State) -> Self {
         self.current_state = Some(state);
         self
     }
 
-    /// Sets particular transition algorithm to the state machine.
     fn transition(mut self, next: Transition) -> Self {
         self.transition = Some(next);
         self
     }
 
-    /// To finish the builder. If it fails, returns [`crate::machine::error::StateMachineError`].
     fn build(self) -> Result<Self::Output, Box<dyn std::error::Error>> {
         match (self.initial_state, self.transition) {
             (Some(initial_state), Some(transition)) => Ok(BasicStateMachine {
