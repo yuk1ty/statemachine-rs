@@ -4,10 +4,8 @@
 
 A zero dependency crate to implement state machine.
 
-### Current Version
-0.1.0
-
 ### Usage
+
 Let's have a look at the following simple example. This example shows the state machine
 can transit its number (it called `current_state` in this machine)
 from given string ("next") and then, it produces outputs.
@@ -68,10 +66,13 @@ fn main() {
     assert_eq!(ButtonState::On, sm.current_state());
 }
 ```
+
 ### License
+
 MIT
 
 ### Contribution
+
 All contributions are welcome.
 
 If you have an idea to improve this crate, create new issue or submit new pull request.
