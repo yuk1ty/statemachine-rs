@@ -11,10 +11,13 @@ can transit its number (it called `current_state` in this machine)
 from given string ("next") and then, it produces outputs.
 
 ```rust
-use statemachine_rs::machine::{builder::StateMachineBuilder, StateMachine};
+use statemachine_rs::machine::{
+    builder::{BasicStateMachineBuilder, StateMachineBuilder},
+    StateMachine,
+};
 
 fn main() {
-    let sm = StateMachineBuilder::start()
+    let sm = BasicStateMachineBuilder::start()
         .initial_state(1)
         .transition(|state, input| match (state, input) {
             (1, "next") => 2,
@@ -39,7 +42,10 @@ Of cource we can use `enum`s for representing states and inputs. Let's have a lo
 The following example describes if you press the button, the state turns to be `On`. Otherwise, `Off`.
 
 ```rust
-use statemachine_rs::machine::{builder::StateMachineBuilder, StateMachine};
+use statemachine_rs::machine::{
+    builder::{BasicStateMachineBuilder, StateMachineBuilder},
+    StateMachine,
+};
 
 #[derive(Clone, Debug, PartialEq)]
 enum ButtonState {
@@ -52,7 +58,7 @@ enum Input {
 }
 
 fn main() {
-    let sm = StateMachineBuilder::start()
+    let sm = BasicStateMachineBuilder::start()
         .initial_state(ButtonState::Off)
         .transition(|state, input| match (state, input) {
             (ButtonState::On, Input::Press) => ButtonState::Off,
