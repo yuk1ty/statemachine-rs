@@ -33,9 +33,9 @@ fn main() {
 }
 ```
 
-You can assemble your state machine by using `statemachine_rs::machine::builder::StateMachineBUilder`.
-`StateMachineBuilder::initial_state()` initializes the initial state of its machine.
-`StateMachineBuilder::transition()` defines the transition model.
+You can assemble your state machine by using `statemachine_rs::machine::builder::BasicStateMachineBuilder`.
+`BasicStateMachineBuilder::initial_state()` initializes the initial state of its machine.
+`BasicStateMachineBuilder::transition()` defines the transition model.
 
 Of cource we can use `enum`s for representing states and inputs. Let's have a look at another example.
 
